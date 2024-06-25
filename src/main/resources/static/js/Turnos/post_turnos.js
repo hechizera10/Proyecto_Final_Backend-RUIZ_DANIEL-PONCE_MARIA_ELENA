@@ -51,16 +51,6 @@ window.addEventListener('load', function () {
                     });
             })
             .then(response => response.json())
-            .then(data => {
-                // Si no hay ningun error se muestra un mensaje diciendo que el turno se agrego bien
-                let successAlert = '<div class="alert alert-success alert-dismissible">' +
-                    '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
-                    '<strong></strong> Turno agregado </div>';
-
-                document.querySelector('#response').innerHTML = successAlert;
-                document.querySelector('#response').style.display = "block";
-                resetUploadForm();
-            })
             .catch(error => {
                 // Si hay algun error se muestra un mensaje diciendo que el turno no se pudo guardar y se intente nuevamente
                 let errorAlert = '<div class="alert alert-danger alert-dismissible">' +
