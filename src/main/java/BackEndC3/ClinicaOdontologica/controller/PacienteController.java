@@ -18,8 +18,15 @@ public class PacienteController {
     private PacienteService pacienteService;
 
     @GetMapping("/{id}") //--> nos permite buscar un paciente por id
-    public ResponseEntity<Optional<Paciente>> buscarPacientePorId(@PathVariable Long id){
-        return ResponseEntity.ok(pacienteService.buscarPorID(id));
+    public ResponseEntity<Optional<Paciente>> buscarPacientePorId(@PathVariable Long id) throws ResourceNotFoundException {
+        Optional<Paciente> pacienteBuscado= pacienteService.buscarPorID(id);
+        if(pacienteBuscado.isPresent()){
+            return ResponseEntity.ok(pacienteBuscado);
+        }else{
+            throw new ResourceNotFoundException("Turno no encontrado");
+
+        }
+
     }
 
     @GetMapping
@@ -28,8 +35,13 @@ public class PacienteController {
     }
 
     @GetMapping("/cedula/{cedula}")
-    public ResponseEntity<Optional<Paciente>> buscarPorCedula(@PathVariable String cedula){
-        return ResponseEntity.ok(pacienteService.buscarPorCedula(cedula));
+    public ResponseEntity<Optional<Paciente>> buscarPorCedula(@PathVariable String cedula) throws ResourceNotFoundException {
+        Optional<Paciente> pacienteBuscado = pacienteService.buscarPorCedula(cedula);
+        if (pacienteBuscado.isPresent()) {
+            return ResponseEntity.ok(Optional.of(pacienteBuscado.get()));
+        } else {
+            throw new ResourceNotFoundException("Paciente no encontrado");
+        }
     }
 
     @PostMapping //--> nos permite persistir los datos que vienen desde la vista
@@ -38,14 +50,14 @@ public class PacienteController {
     }
 
     @PutMapping
-    public ResponseEntity<String> actualizarPaciente(@RequestBody Paciente paciente){
+    public ResponseEntity<String> actualizarPaciente(@RequestBody Paciente paciente) throws ResourceNotFoundException {
 
         Optional<Paciente> pacienteBuscado= pacienteService.buscarPorID(paciente.getId());
         if(pacienteBuscado.isPresent()){
             pacienteService.actualizarPaciente(paciente);
             return ResponseEntity.ok("paciente actualizado con exito");
         }else{
-            return ResponseEntity.badRequest().build();
+            throw new ResourceNotFoundException("Paciente no encontrado");
         }
 
     }
@@ -62,31 +74,13 @@ public class PacienteController {
     }
 
     @GetMapping("/buscar/{email}")
-    public ResponseEntity<Optional<Paciente>> buscarPorEmail(@PathVariable String email){
+    public ResponseEntity<Optional<Paciente>> buscarPorEmail(@PathVariable String email) throws ResourceNotFoundException {
         Optional<Paciente> pacienteBuscado= pacienteService.buscarPorEmail(email);
         if(pacienteBuscado.isPresent()){
             return ResponseEntity.ok(pacienteBuscado);
         }else{
-            return  ResponseEntity.notFound().build();
+            throw new ResourceNotFoundException("Paciente no encontrado");
         }
     }
-
-
-    //ahora vienen todos los metodos que nos permitan actuar como intermediarios.
-//    @GetMapping
-//    public String buscarPacientePorCorreo(Model model, @RequestParam("email") String email){
-//
-//        Paciente paciente= pacienteService.buscarPorEmail(email);
-//        Integer matricula =paciente.getOdontologo().getMatricula();
-//
-//        model.addAttribute("nombre",paciente.getNombre());
-//        model.addAttribute("apellido",paciente.getApellido());
-//        model.addAttribute("matricula",matricula);
-//
-//        return "index";
-//
-//        //return pacienteService.buscarPorEmail(email);
-//    }
-
 
 }

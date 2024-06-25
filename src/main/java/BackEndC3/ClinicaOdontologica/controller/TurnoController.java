@@ -44,12 +44,12 @@ public class TurnoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Turno>> buscarPorId(@PathVariable Long id){
+    public ResponseEntity<Optional<Turno>> buscarPorId(@PathVariable Long id) throws ResourceNotFoundException {
         Optional<Turno> turnoBuscado= turnoService.buscarPorId(id);
         if(turnoBuscado.isPresent()){
             return ResponseEntity.ok(turnoBuscado);
         }else{
-            return ResponseEntity.badRequest().build();
+            throw new ResourceNotFoundException("Turno no encontrado");
         }
     }
 
@@ -71,7 +71,7 @@ public class TurnoController {
 
     // --> Cuando se actualiza despliega null el paciente y el odontologo
     @PutMapping
-    public ResponseEntity<String> actualizarTurno(@RequestBody Turno turno){
+    public ResponseEntity<String> actualizarTurno(@RequestBody Turno turno) throws ResourceNotFoundException {
         //Paciente pacienteBuscado;
         //Odontologo odontologoBuscado;
         Optional<Turno> turnoBuscado= turnoService.buscarPorId(turno.getId());
@@ -81,12 +81,8 @@ public class TurnoController {
             turnoService.actualizarTurno(turno);
             return ResponseEntity.ok("Turno actualizado con exito");
         }else{
-            return ResponseEntity.badRequest().build();
+            throw new ResourceNotFoundException("Turno no encontrado");
         }
     }
-
-
-
-
 
 }

@@ -24,13 +24,14 @@ public class OdontologoController {
     //ahora vienen todos los metodos que nos permitan actuar como intermediarios.
 
     @GetMapping("/{id}")
-    public ResponseEntity<Odontologo> buscarOdontologoPorId(@PathVariable Long id){
+    public ResponseEntity<Odontologo> buscarOdontologoPorId(@PathVariable Long id) throws ResourceNotFoundException {
         Optional<Odontologo> odontologoOptional = odontologoService.buscarOdontologoPorId(id);
         if (odontologoOptional.isPresent()) {
             Odontologo odontologo = odontologoOptional.get();
             return ResponseEntity.ok(odontologo);
         }
-        return ResponseEntity.badRequest().build();
+        throw new ResourceNotFoundException("Odontólogo no encontrado");
+
     }
 
 
@@ -40,14 +41,15 @@ public class OdontologoController {
     }
 
     @PutMapping
-    public ResponseEntity<String> actualizarOdontologo(@RequestBody Odontologo odontologo){
+    public ResponseEntity<String> actualizarOdontologo(@RequestBody Odontologo odontologo) throws ResourceNotFoundException {
 
         Optional<Odontologo> odontologoBuscado= odontologoService.buscarOdontologoPorId(odontologo.getId());
         if(odontologoBuscado.isPresent()){
             odontologoService.actualizarOdontologo(odontologo);
             return ResponseEntity.ok("Odontologo actualizado con exito");
         }else{
-            return ResponseEntity.badRequest().build();
+            throw new ResourceNotFoundException("Odontólogo no encontrado");
+
         }
 
     }
@@ -68,21 +70,14 @@ public class OdontologoController {
         return ResponseEntity.ok(odontologoService.buscarTodos());
     }
     @GetMapping("/matricula/{matricula}")
-    public ResponseEntity<Optional<Odontologo>> buscarOdontologoPorMatricula(@PathVariable Integer matricula) {
+    public ResponseEntity<Optional<Odontologo>> buscarOdontologoPorMatricula(@PathVariable Integer matricula) throws ResourceNotFoundException {
         Optional<Odontologo> odontologo = odontologoService.buscarPorMatricula(matricula);
         if (odontologo.isPresent()) {
             return ResponseEntity.ok(Optional.of(odontologo.get()));
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            throw new ResourceNotFoundException("Odontólogo no encontrado");
+
         }
     }
 
-//    @GetMapping
-//    public String buscarOdontologoPorId(Model model, @RequestParam("id") Integer id){
-//
-//        Odontologo odontologo= odontologoService.buscarOdontologoPorId(id);
-//
-//        model.addAttribute("matricula",odontologo.getMatricula());
-//        return "index";
-//    }
 }
