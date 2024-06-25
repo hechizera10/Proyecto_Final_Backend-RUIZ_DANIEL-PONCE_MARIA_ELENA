@@ -28,7 +28,7 @@ Es importante realizar el manejo de excepciones logueando cualquier excepción q
 - Clases de acceso a datos con la utilización de ORM.
 - Clases de servicio.
 - Clases controllers.
-- Utilización MVC y Thymeleaf.
+- Utilización MVC y Spring.
 - Invocación de alguna API con JavaScript.
 - Uso de buenas prácticas:
   - Logueo con Log4J ante excepciones.
