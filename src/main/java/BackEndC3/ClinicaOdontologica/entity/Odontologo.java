@@ -32,6 +32,10 @@ public class Odontologo {
     @Column
     private String apellido;
 
+    @OneToMany(mappedBy = "odontologo", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
+    private Set<Turno> turnos = new HashSet<>();
+
 
     public Odontologo(Long id, Integer matricula, String nombre, String apellido) {
         this.id = id;
