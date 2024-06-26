@@ -40,18 +40,10 @@ window.addEventListener('load', function () {
                         });
                     })
                     .catch(error => {
-                        console.error('Error en la segunda llamada fetch:', error);
+
                     });
 
 
-
-        // Función para activar el enlace de navegación
-        (function () {
-            let pathname = window.location.pathname;
-            if (pathname == "/get_turnos.html") {
-                document.querySelector(".nav .nav-item a:last").addClass("active");
-            }
-        })();
 
     })();
 });

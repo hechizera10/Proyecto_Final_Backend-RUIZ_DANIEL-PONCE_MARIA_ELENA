@@ -19,7 +19,7 @@ window.addEventListener('load', function () {
         fetch(`/pacientes/cedula/${cedulaPaciente}`)
             .then(response => {
                 if (!response.ok) {
-                    alert("Paciente no encontrado");
+                    errorAlert('encontrar', 'Paciente');
                     throw new Error('Paciente no encontrado');
                 }
                 return response.json();
@@ -28,7 +28,7 @@ window.addEventListener('load', function () {
                 return fetch(`/odontologos/matricula/${matriculaOdontologo}`)
                     .then(response => {
                         if (!response.ok) {
-                            alert("Odontologo no encontrado");
+                            errorAlert('encontrar', 'Odontólogo');
                             throw new Error('Odontólogo no encontrado');
                         }
                         return response.json();
@@ -73,13 +73,45 @@ window.addEventListener('load', function () {
             })
             .then(response => {
                 if (!response.ok) {
-                    alert('Error al modificar el turno')
+                    errorAlert('modificar', 'Turno');
                     throw new Error('Error al modificar el turno');
                 }
-                console.log('Turno modificado con éxito');
+                successAlert('modificar', 'Turno');
                 window.location.href = '/get_turnos.html';
             })
+            .catch(error => {
+                errorAlert('procesar', 'Turno');
+            });
     });
+
+    function resetUploadForm() {
+        document.querySelector('#paciente').value = "";
+        document.querySelector('#odontologo').value = "";
+        document.querySelector('#fecha').value = "";
+    }
+
+    function successAlert(accion, elemento) {
+        const successAlert = `
+            <div class="alert alert-success alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+               El <strong>${elemento}</strong> se ha podido ${accion} con éxito
+            </div>`;
+        document.querySelector('#response').innerHTML = successAlert;
+        document.querySelector('#response').style.display = "block";
+        resetUploadForm();
+    }
+
+
+    function errorAlert(accion, mensaje) {
+        const errorAlert = `
+            <div class="alert alert-danger alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Error al ${accion}: ${mensaje}</strong>
+            </div>`;
+        document.querySelector('#response').innerHTML = errorAlert;
+        document.querySelector('#response').style.display = "block";
+        resetUploadForm();
+    }
 
     function findBy(id) {
         const url = '/turnos/' + id;
@@ -96,10 +128,11 @@ window.addEventListener('load', function () {
                 document.querySelector('#fecha').value = turno.fecha;
                 document.querySelector('#div_turno_updating').style.display = "block";
             }).catch(error => {
-            alert("Error: " + error);
+            errorAlert('buscar', error.message);
         });
     }
 
     window.findBy = findBy;
 });
+
 
