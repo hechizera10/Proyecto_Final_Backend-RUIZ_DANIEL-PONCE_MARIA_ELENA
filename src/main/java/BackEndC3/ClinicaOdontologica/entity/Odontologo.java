@@ -2,6 +2,7 @@ package BackEndC3.ClinicaOdontologica.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,9 +19,11 @@ public class Odontologo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "Valor unico por entidad, auto-incremental, por ejemplo = 1")
     private Long id;
 
-    @Column
+    @Column(unique = true, nullable = false)
+    @Schema(description = "Matricula debe llevar un valor numerico", required = false)
     private Integer matricula;
 
     @Column
