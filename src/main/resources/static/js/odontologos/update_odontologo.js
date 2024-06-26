@@ -5,15 +5,44 @@ window.addEventListener('load', function () {
     //los datos que el usuario pudo haber modificado del odontologo
     const formulario = document.querySelector('#update_odontologo_form');
 
-    formulario.addEventListener('submit', function (event) {
+    function successAlert(accion, elemento) {
+        const successAlert = `
+            <div class="alert alert-success alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                El <strong>${elemento}</strong> se ha podido ${accion} con éxito
+            </div>`;
+        document.querySelector('#response').innerHTML = successAlert;
+        document.querySelector('#response').style.display = "block";
+        resetUploadForm(); // Restablecer el formulario después de éxito
+    }
 
+    function errorAlert(accion, mensaje) {
+        const errorAlert = `
+            <div class="alert alert-danger alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Error al ${accion}: ${mensaje}</strong>
+            </div>`;
+        document.querySelector('#response').innerHTML = errorAlert;
+        document.querySelector('#response').style.display = "block";
+        resetUploadForm(); // Restablecer el formulario después de error
+    }
+    function resetUploadForm(){
+        document.querySelector('#matricula').value = "";
+        document.querySelector('#nombre').value = "";
+        document.querySelector('#apellido').value = "";
+
+    }
+
+
+    formulario.addEventListener('submit', function (event) {
+        event.preventDefault();
         let odontologoId = document.querySelector('#odontologo_id').value;
 
         //creamos un JSON que tendrá los datos del odontologo
         //a diferencia de un odontologo nuevo en este caso enviamos el id
         //para poder identificarlo y modificarlo para no cargarla como nuevo
         const formData = {
-            id: document.querySelector('#odontologo_id').value,
+            id: odontologoId,
             matricula: document.querySelector('#matricula').value,
             nombre: document.querySelector('#nombre').value,
             apellido: document.querySelector('#apellido').value,
@@ -31,7 +60,20 @@ window.addEventListener('load', function () {
             body: JSON.stringify(formData)
         }
           fetch(url,settings)
-          .then(response => response.json())
+              .then(response => {
+                  if (!response.ok) {
+                      errorAlert('modificar', 'Odontologo');
+                      throw new Error('Error al modificar el odontologo');
+                  }
+                  return response;
+              })
+              .then(data => {
+                  successAlert('modificar', 'Odontologo');
+                  window.location.reload(); // Recargar la página después de éxito
+              })
+              .catch(error => {
+                  errorAlert('modificar', 'Odontologo');
+              });
 
     })
 })
@@ -45,9 +87,14 @@ window.addEventListener('load', function () {
               method: 'GET'
           }
           fetch(url,settings)
-          .then(response => response.json())
-          .then(data => {
-              let odontologo = data;
+              .then(response => {
+                  if (!response.ok) {
+                      throw new Error('Odontologo no encontrado');
+                  }
+                  return response.json();
+              })
+              .then(data => {
+                  let odontologo = data;
               document.querySelector('#odontologo_id').value = odontologo.id;
               document.querySelector('#matricula').value = odontologo.matricula;
               document.querySelector('#nombre').value = odontologo.nombre;
@@ -55,6 +102,7 @@ window.addEventListener('load', function () {
               //el formulario por default esta oculto y al editar se habilita
               document.querySelector('#div_odontologo_updating').style.display = "block";
           }).catch(error => {
-              alert("Error: " + error);
+              console.error('Error en la solicitud:', error);
+              errorAlert('modificar', 'Odontologo');
           })
       }

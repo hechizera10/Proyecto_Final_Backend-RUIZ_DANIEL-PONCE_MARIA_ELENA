@@ -6,7 +6,7 @@ window.addEventListener('load', function () {
 
     //Ante un submit del formulario se ejecutará la siguiente funcion
     formulario.addEventListener('submit', function (event) {
-
+        event.preventDefault(); // Evitar envío por defecto
        //creamos un JSON que tendrá los datos del nuevo odontologo
         const formData = {
             matricula: document.querySelector('#matricula').value,
@@ -26,32 +26,46 @@ window.addEventListener('load', function () {
         }
 
         fetch(url, settings)
-            .then(response => response.json())
+            .then(response =>{
+                if (!response.ok) {
+                    throw new Error('Error al agregar el odontologo');
+                }
+                return response.json();
+            })
             .then(data => {
                  //Si no hay ningun error se muestra un mensaje diciendo que el odontologo
                  //se agrego bien
-                 let successAlert = '<div class="alert alert-success alert-dismissible">' +
-                     '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
-                     '<strong></strong> Odontologo agregado </div>'
-
-                 document.querySelector('#response').innerHTML = successAlert;
-                 document.querySelector('#response').style.display = "block";
-                 resetUploadForm();
+                successAlert('agregar', 'Odontologo');
 
             })
             .catch(error => {
                     //Si hay algun error se muestra un mensaje diciendo que el odontologo
                     //no se pudo guardar y se intente nuevamente
-                    let errorAlert = '<div class="alert alert-danger alert-dismissible">' +
-                                     '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
-                                     '<strong> Error intente nuevamente</strong> </div>'
-
-                      document.querySelector('#response').innerHTML = errorAlert;
-                      document.querySelector('#response').style.display = "block";
-                     //se dejan todos los campos vacíos por si se quiere ingresar otro odontologo
-                     resetUploadForm();})
+                errorAlert('agregar', 'Odontologo');
+            });
     });
 
+    function successAlert(accion, elemento) {
+        const successAlert = `
+            <div class="alert alert-success alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+               El <strong>${elemento}</strong> se ha podido ${accion} con éxito
+            </div>`;
+        document.querySelector('#response').innerHTML = successAlert;
+        document.querySelector('#response').style.display = "block";
+        resetUploadForm();
+    }
+
+    function errorAlert(accion, mensaje) {
+        const errorAlert = `
+            <div class="alert alert-danger alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Error al ${accion}: ${mensaje}</strong>
+            </div>`;
+        document.querySelector('#response').innerHTML = errorAlert;
+        document.querySelector('#response').style.display = "block";
+        resetUploadForm();
+    }
 
     function resetUploadForm(){
         document.querySelector('#matricula').value = "";
